@@ -18,17 +18,16 @@ const scoreMatrix = [
 ];
 
 const rows = [];
-for (let i = 0; i < systems.length; i++) {
-  for (let j = 0; j < criteria.length; j++) {
-    const score = scoreMatrix[i][j];
-    rows.push({
-      system: systems[i],
-      criterion: criteria[j],
-      score,
-      // simple 0–100 confidence derived from the score
-      confidence: Math.round((score / 5) * 100),
-    });
+// Validate that scoreMatrix dimensions match systems × criteria
+if (!Array.isArray(scoreMatrix) || scoreMatrix.length !== systems.length) {
+  throw new Error(`Invalid scoreMatrix: expected ${systems.length} rows (one per system), got ${Array.isArray(scoreMatrix) ? scoreMatrix.length : 'non-array'}`);
+}
+for (let i = 0; i < scoreMatrix.length; i++) {
+  const row = scoreMatrix[i];
+  if (!Array.isArray(row) || row.length !== criteria.length) {
+    throw new Error(`Invalid scoreMatrix row ${i}: expected ${criteria.length} columns (one per criterion), got ${Array.isArray(row) ? row.length : 'non-array'}`);
   }
+}
 }
 
 process.stdout.write(JSON.stringify(rows));
