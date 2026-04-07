@@ -217,11 +217,15 @@ Inputs.table(benchmark, {
 
 ```js
 // Interactive heatmap — filter by system with a checkbox group.
+const systemOptions = Array.from(new Set(benchmark.map(d => d.system)));
+const preferredSystems = ["Dense RAG", "PageIndex-style"];
+const defaultSystems = preferredSystems.filter(system => systemOptions.includes(system));
+
 const selectedSystems = view(Inputs.checkbox(
-  ["Keyword / BM25", "Dense RAG", "Layout-aware", "PageIndex-style"],
+  systemOptions,
   {
     label: "Systems to compare",
-    value: ["Dense RAG", "PageIndex-style"],
+    value: defaultSystems.length ? defaultSystems : systemOptions.slice(0, Math.min(2, systemOptions.length)),
   }
 ));
 ```
