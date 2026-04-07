@@ -45,6 +45,8 @@ Dense retrieval emerged as a response to that limitation. Instead of matching ex
 
 That shift laid the groundwork for modern RAG systems. Lewis et al. (2020) formalized retrieval-augmented generation as a method that combines a generative language model with non-parametric memory, meaning knowledge stored outside the model in retrieved documents. Their work is foundational because it frames retrieval not as a separate search utility, but as part of the answer-generation process itself. RAG improved factual grounding and helped models produce answers tied to evidence rather than relying only on internal parameters.
 
+![Figure 1. Evolution of document retrieval approaches — the shift is not only toward more powerful models, but toward richer document representations.](assets/evolution-dark.svg)
+
 ## Strengths and Limits of Conventional RAG
 
 RAG remains attractive because it is practical. It allows organizations to update a knowledge base without retraining a model, and it gives users answers that can be tied back to retrieved sources. Borgeaud et al. (2022) further demonstrated the power of retrieval-augmented systems at scale by showing that retrieval could improve language-model performance while reducing the need for extremely large parameter counts.
@@ -73,6 +75,8 @@ The evidence for PageIndex still needs to be handled carefully. Official benchma
 
 For a final research report, comparison matters more than novelty alone. The strongest way to evaluate PageIndex is to compare it with conventional RAG in a setting where layout and continuity matter. Industrial maintenance manuals provide that setting because they combine long procedures, page-level references, warnings, tables, and visual elements.
 
+![Figure 2. Retrieval workflow comparison — the deepest difference between the two approaches is the assumed shape of the document.](assets/workflow-dark.svg)
+
 Table 1 compares four retrieval approaches relevant to this problem. As the table shows, the main difference is not simply whether a system is "AI" or "non-AI." The deeper issue is what form of document representation each system assumes.
 
 **Table 1. Comparison of retrieval approaches for long technical documents**
@@ -85,6 +89,8 @@ Table 1 compares four retrieval approaches relevant to this problem. As the tabl
 | PageIndex-style retrieval | Page hierarchy and reasoning over document structure | Preserves section context, page relationships, and traceability | Newer approach; less independent validation; may add orchestration complexity | Long, highly structured manuals and reports |
 
 The practical advantage of PageIndex becomes clearer when the use case is narrowed further. Imagine a field technician searching a compressor maintenance manual for the startup procedure after a seal replacement. In a chunk-based system, one chunk may contain the sequence of steps, another may contain the pressure threshold, and a third may contain a warning box about overheating. If the system retrieves only the first chunk because it is the closest semantic match, the answer may sound complete while leaving out material that changes the correct action. A page-structured approach has a better chance of preserving those local relationships.
+
+![Figure 3. Where retrieval breaks in long technical manuals — failure points concentrate at the moment a visual document is flattened into disconnected text units.](assets/failure-modes-dark.svg)
 
 This does not make conventional RAG ineffective. Standard RAG remains a strong choice for many tasks, especially when documents are mostly linear prose and the target is a short factual passage. In those cases, dense retrieval offers a practical balance of speed, flexibility, and performance. Long technical manuals are different. They are visual documents, and some of their meaning sits in the layout itself.
 
@@ -101,6 +107,8 @@ Table 2 applies that comparison directly to industrial manuals. It uses five cri
 | Usability for non-experts | Users need answers that reflect whole procedures, not fragments | Can be good, but incomplete retrieval can mislead | Potentially stronger for structured document navigation |
 
 As Table 2 suggests, the main value of PageIndex is not that it rejects retrieval, but that it changes the unit of retrieval from arbitrary text slices to navigable document structure. That design choice directly addresses several failure modes identified by Barnett et al. (2024), especially those involving chunk boundaries, ranking errors, and noisy context assembly.
+
+![Figure 4. Comparative fit of keyword search, conventional RAG, and PageIndex-style retrieval for long industrial manuals — higher bars indicate stronger fit for the stated criterion.](assets/comparison-dark.svg)
 
 There is an interpretive advantage as well. Human readers are more likely to trust a system when they can see how it reached an answer. A page-based retrieval path is easier to explain than a hidden nearest-neighbor search over high-dimensional embeddings. In regulated or safety-sensitive environments, that matters.
 

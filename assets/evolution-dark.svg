@@ -1,5 +1,53 @@
 <svg width="1400" height="520" viewBox="0 0 1400 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#E3B341"/>
+    </marker>
+  </defs>
   <rect width="1400" height="520" fill="#0B1020"/>
-  <text x="80" y="78" fill="#E8EEF9" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700">Figure 3. Evolution of document retrieval approaches</text>
+  <!-- Title -->
+  <text x="80" y="78" fill="#E8EEF9" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700">Figure 1. Evolution of document retrieval approaches</text>
   <text x="80" y="112" fill="#92A4C2" font-family="Arial, Helvetica, sans-serif" font-size="20">The shift is not only toward more powerful models, but toward richer document representations.</text>
+  <!-- Node 1: Keyword IR -->
+  <rect x="80" y="180" width="200" height="130" rx="16" fill="#10182B" stroke="#30363D" stroke-width="2"/>
+  <text x="180" y="234" fill="#92A4C2" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="700" text-anchor="middle">Keyword IR</text>
+  <text x="180" y="258" fill="#7D8590" font-family="Arial, Helvetica, sans-serif" font-size="14" text-anchor="middle">BM25 · inverted index</text>
+  <text x="180" y="278" fill="#7D8590" font-family="Arial, Helvetica, sans-serif" font-size="14" text-anchor="middle">Exact term matching</text>
+  <text x="180" y="300" fill="#7D8590" font-family="Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle">~1990s</text>
+  <!-- Arrow 1→2 -->
+  <line x1="280" y1="245" x2="336" y2="245" stroke="#E3B341" stroke-width="2.5" marker-end="url(#arr)"/>
+  <!-- Node 2: Dense Retrieval -->
+  <rect x="342" y="180" width="200" height="130" rx="16" fill="#10182B" stroke="#E3B341" stroke-width="2"/>
+  <text x="442" y="234" fill="#E3B341" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="700" text-anchor="middle">Dense retrieval</text>
+  <text x="442" y="258" fill="#92A4C2" font-family="Arial, Helvetica, sans-serif" font-size="14" text-anchor="middle">Embeddings · DPR</text>
+  <text x="442" y="278" fill="#92A4C2" font-family="Arial, Helvetica, sans-serif" font-size="14" text-anchor="middle">Semantic matching</text>
+  <text x="442" y="300" fill="#7D8590" font-family="Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle">~2017–2020</text>
+  <!-- Arrow 2→3 -->
+  <line x1="542" y1="245" x2="598" y2="245" stroke="#E3B341" stroke-width="2.5" marker-end="url(#arr)"/>
+  <!-- Node 3: RAG -->
+  <rect x="604" y="180" width="200" height="130" rx="16" fill="#10182B" stroke="#E3B341" stroke-width="2"/>
+  <text x="704" y="234" fill="#E3B341" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="700" text-anchor="middle">RAG</text>
+  <text x="704" y="258" fill="#92A4C2" font-family="Arial, Helvetica, sans-serif" font-size="14" text-anchor="middle">Retrieve + generate</text>
+  <text x="704" y="278" fill="#92A4C2" font-family="Arial, Helvetica, sans-serif" font-size="14" text-anchor="middle">Chunk-based recall</text>
+  <text x="704" y="300" fill="#7D8590" font-family="Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle">2020</text>
+  <!-- Arrow 3→4 -->
+  <line x1="804" y1="245" x2="860" y2="245" stroke="#E3B341" stroke-width="2.5" marker-end="url(#arr)"/>
+  <!-- Node 4: Layout-aware -->
+  <rect x="866" y="180" width="200" height="130" rx="16" fill="#10182B" stroke="#5EEAD4" stroke-width="2"/>
+  <text x="966" y="227" fill="#5EEAD4" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="700" text-anchor="middle">Layout-aware</text>
+  <text x="966" y="251" fill="#92A4C2" font-family="Arial, Helvetica, sans-serif" font-size="14" text-anchor="middle">LayoutLM · spatial</text>
+  <text x="966" y="271" fill="#92A4C2" font-family="Arial, Helvetica, sans-serif" font-size="14" text-anchor="middle">Text + position</text>
+  <text x="966" y="291" fill="#92A4C2" font-family="Arial, Helvetica, sans-serif" font-size="14" text-anchor="middle">features</text>
+  <text x="966" y="311" fill="#7D8590" font-family="Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle">2020–2022</text>
+  <!-- Arrow 4→5 -->
+  <line x1="1066" y1="245" x2="1122" y2="245" stroke="#E3B341" stroke-width="2.5" marker-end="url(#arr)"/>
+  <!-- Node 5: PageIndex -->
+  <rect x="1128" y="180" width="200" height="130" rx="16" fill="#10182B" stroke="#7DD3FC" stroke-width="2.5"/>
+  <text x="1228" y="234" fill="#7DD3FC" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="700" text-anchor="middle">PageIndex</text>
+  <text x="1228" y="258" fill="#E8EEF9" font-family="Arial, Helvetica, sans-serif" font-size="14" text-anchor="middle">Tree-structured index</text>
+  <text x="1228" y="278" fill="#E8EEF9" font-family="Arial, Helvetica, sans-serif" font-size="14" text-anchor="middle">Agentic reasoning</text>
+  <text x="1228" y="298" fill="#E8EEF9" font-family="Arial, Helvetica, sans-serif" font-size="14" text-anchor="middle">Vectorless retrieval</text>
+  <text x="1228" y="318" fill="#7DD3FC" font-family="Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle">2026</text>
+  <!-- Bottom label -->
+  <text x="700" y="400" fill="#7D8590" font-family="Arial, Helvetica, sans-serif" font-size="18" text-anchor="middle">Richer document representation ──────────────────────────────────────────────────────────────▶</text>
 </svg>
