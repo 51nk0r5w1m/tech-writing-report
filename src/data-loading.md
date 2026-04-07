@@ -300,7 +300,7 @@ html`<div class="grid grid-cols-4">
   </div>
   <div class="card">
     <div class="label">📅 Last push</div>
-    <div class="big">${new Date(frameworkRepo.pushed_at).toLocaleDateString()}</div>
+    <div class="big">${frameworkRepo.pushed_at ? new Date(frameworkRepo.pushed_at).toLocaleDateString() : "—"}</div>
     <div class="muted">most recent push</div>
   </div>
 </div>`
