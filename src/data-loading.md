@@ -339,11 +339,11 @@ const qualifying = benchmark.filter(d => d.score >= minScore);
 Plot.plot({
   title: `Criteria scoring ≥ ${minScore} across all systems`,
   marginLeft: 140,
-  x: { label: "Confidence % (score/5 × 100) →", domain: [0, 100] },
+  x: { label: "Score →", domain: [0, 5] },
   color: { scheme: "tableau10", legend: true },
   marks: [
     Plot.dot(qualifying, {
-      x: "confidence",
+      x: "score",
       y: "criterion",
       fill: "system",
       r: 10,

@@ -14,9 +14,17 @@ if (!Array.isArray(raw) || raw.length === 0) {
   throw new Error("retrieval-scores.json must be a non-empty array");
 }
 
-// Derive criteria from the first entry's keys (exclude non-score fields)
+// Derive criteria from the union of all entries' keys (exclude non-score fields)
+// Using the union rather than just raw[0] ensures we don't silently miss
+// criteria that appear in later entries but not the first.
 const NON_CRITERIA = new Set(["approach", "description"]);
-const criteria = Object.keys(raw[0]).filter(k => !NON_CRITERIA.has(k));
+const criteriaSet = new Set();
+for (const entry of raw) {
+  for (const key of Object.keys(entry)) {
+    if (!NON_CRITERIA.has(key)) criteriaSet.add(key);
+  }
+}
+const criteria = Array.from(criteriaSet);
 
 if (criteria.length === 0) {
   throw new Error("retrieval-scores.json entries must include at least one numeric criterion field");
