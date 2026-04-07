@@ -193,7 +193,7 @@ Plot.plot({
 
 A data loader is a script in `src/data/` whose **output becomes a static file** at build time. You write it once; the framework runs it during `observable build` and serves the result. Loaders can be Node.js (`.js`), Python (`.py`), shell (`.sh`), or any executable.
 
-The file `src/data/benchmark.js` in this project is a data loader. It generates a **tidy (long-format)** version of the retrieval-scores, with one row per `(system, criterion)` pair — perfect for multi-series charts.
+The file `src/data/benchmark.js` in this project is a data loader. It emits a **tidy (long-format)** benchmark dataset, with one row per `(system, criterion)` pair — perfect for multi-series charts.
 
 ```js
 // The loader output is consumed exactly like a FileAttachment.
@@ -209,7 +209,7 @@ Inputs.table(benchmark, {
     system: "System",
     criterion: "Criterion",
     score: "Score (0–5)",
-    confidence: "Confidence %",
+    confidence: "Confidence",
   },
   rows: 10,
 })
@@ -277,7 +277,10 @@ Sometimes you want **live data** that changes after the site is built — a real
 ```js
 // Fetch Observable Framework's own GitHub repository metadata — live.
 const frameworkRepo = fetch("https://api.github.com/repos/observablehq/framework")
-  .then(r => r.json());
+  .then(r => {
+    if (!r.ok) throw new Error(`GitHub API request failed: ${r.status} ${r.statusText}`);
+    return r.json();
+  });
 ```
 
 ```js

@@ -1,33 +1,45 @@
+import {readFileSync} from "node:fs";
+
 // Observable Framework data loader
 // Runs at build time with Node.js — output is served as data/benchmark.json
 //
-// This loader generates a long-form (tidy) version of the retrieval-scores data,
-// plus a simple "confidence" field calculated from the scores, so we can show
-// a slightly richer dataset than the raw JSON.
+// This loader reads retrieval-scores.json at build time, converts it into a
+// long-form (tidy) dataset with one row per (system, criterion) pair, and adds
+// a derived "confidence" field so we can show a slightly richer dataset than
+// the raw JSON alone.
 
-const systems = ["Keyword / BM25", "Dense RAG", "Layout-aware", "PageIndex-style"];
+const raw = JSON.parse(readFileSync(new URL("./retrieval-scores.json", import.meta.url), "utf8"));
 
-const criteria = ["Completeness", "Layout", "Traceability", "Flexibility", "Usability"];
+if (!Array.isArray(raw) || raw.length === 0) {
+  throw new Error("retrieval-scores.json must be a non-empty array");
+}
 
-// Raw scores (0–5) matching Table 2 in the report
-const scoreMatrix = [
-  [2, 1, 3, 4, 2], // Keyword / BM25
-  [3, 2, 3, 4, 3], // Dense RAG
-  [3, 4, 3, 3, 3], // Layout-aware
-  [4, 5, 5, 4, 4], // PageIndex-style
-];
+// Derive criteria from the first entry's keys (exclude non-score fields)
+const NON_CRITERIA = new Set(["approach", "description"]);
+const criteria = Object.keys(raw[0]).filter(k => !NON_CRITERIA.has(k));
+
+if (criteria.length === 0) {
+  throw new Error("retrieval-scores.json entries must include at least one numeric criterion field");
+}
 
 const rows = [];
-// Validate that scoreMatrix dimensions match systems × criteria
-if (!Array.isArray(scoreMatrix) || scoreMatrix.length !== systems.length) {
-  throw new Error(`Invalid scoreMatrix: expected ${systems.length} rows (one per system), got ${Array.isArray(scoreMatrix) ? scoreMatrix.length : 'non-array'}`);
-}
-for (let i = 0; i < scoreMatrix.length; i++) {
-  const row = scoreMatrix[i];
-  if (!Array.isArray(row) || row.length !== criteria.length) {
-    throw new Error(`Invalid scoreMatrix row ${i}: expected ${criteria.length} columns (one per criterion), got ${Array.isArray(row) ? row.length : 'non-array'}`);
+for (const entry of raw) {
+  if (!entry.approach) {
+    throw new Error("Each entry in retrieval-scores.json must have an 'approach' field");
   }
-}
+  for (const criterion of criteria) {
+    const score = entry[criterion];
+    if (typeof score !== "number") {
+      throw new Error(`Invalid score for ${entry.approach}/${criterion}: expected a number, got ${typeof score}`);
+    }
+    rows.push({
+      system: entry.approach,
+      criterion: criterion.charAt(0).toUpperCase() + criterion.slice(1),
+      score,
+      confidence: score >= 4 ? "high" : score >= 3 ? "medium" : "low",
+    });
+  }
 }
 
 process.stdout.write(JSON.stringify(rows));
+
