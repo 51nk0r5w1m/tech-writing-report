@@ -1,0 +1,54 @@
+<svg width="1400" height="760" viewBox="0 0 1400 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1400" height="760" fill="#0B1020"/>
+  <!-- Title -->
+  <text x="80" y="80" fill="#E8EEF9" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700">Figure 3. Where retrieval breaks in long technical manuals</text>
+  <text x="80" y="114" fill="#92A4C2" font-family="Arial, Helvetica, sans-serif" font-size="20">Failure points concentrate at the moment a visual document is flattened into disconnected text units.</text>
+  <!-- Column headers -->
+  <rect x="80" y="148" width="606" height="52" rx="10" fill="#1A0808" stroke="#FF7B72" stroke-width="1.5"/>
+  <text x="383" y="181" fill="#FF7B72" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" text-anchor="middle">Where OCR + RAG breaks</text>
+  <rect x="714" y="148" width="606" height="52" rx="10" fill="#081A0D" stroke="#56D364" stroke-width="1.5"/>
+  <text x="1017" y="181" fill="#56D364" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" text-anchor="middle">What page-structured retrieval preserves</text>
+  <!-- Divider -->
+  <line x1="700" y1="148" x2="700" y2="660" stroke="#E3B341" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <!-- Row 1 -->
+  <rect x="80" y="212" width="606" height="76" rx="8" fill="#120808" stroke="#FF7B72" stroke-width="1" opacity="0.9"/>
+  <text x="383" y="248" fill="#E8EEF9" font-family="Arial, Helvetica, sans-serif" font-size="18" text-anchor="middle">Warning box separates from</text>
+  <text x="383" y="272" fill="#E8EEF9" font-family="Arial, Helvetica, sans-serif" font-size="18" text-anchor="middle">the procedure step</text>
+  <rect x="714" y="212" width="606" height="76" rx="8" fill="#080E08" stroke="#56D364" stroke-width="1" opacity="0.9"/>
+  <text x="1017" y="248" fill="#E8EEF9" font-family="Arial, Helvetica, sans-serif" font-size="18" text-anchor="middle">Page-level grouping of steps,</text>
+  <text x="1017" y="272" fill="#E8EEF9" font-family="Arial, Helvetica, sans-serif" font-size="18" text-anchor="middle">notes, and warnings</text>
+  <!-- Row 2 -->
+  <rect x="80" y="298" width="606" height="76" rx="8" fill="#120808" stroke="#FF7B72" stroke-width="1" opacity="0.9"/>
+  <text x="383" y="334" fill="#E8EEF9" font-family="Arial, Helvetica, sans-serif" font-size="18" text-anchor="middle">Table values drift away from</text>
+  <text x="383" y="358" fill="#E8EEF9" font-family="Arial, Helvetica, sans-serif" font-size="18" text-anchor="middle">nearby explanation</text>
+  <rect x="714" y="298" width="606" height="76" rx="8" fill="#080E08" stroke="#56D364" stroke-width="1" opacity="0.9"/>
+  <text x="1017" y="334" fill="#E8EEF9" font-family="Arial, Helvetica, sans-serif" font-size="18" text-anchor="middle">Local relationship between</text>
+  <text x="1017" y="358" fill="#E8EEF9" font-family="Arial, Helvetica, sans-serif" font-size="18" text-anchor="middle">values and instructions</text>
+  <!-- Row 3 -->
+  <rect x="80" y="384" width="606" height="76" rx="8" fill="#120808" stroke="#FF7B72" stroke-width="1" opacity="0.9"/>
+  <text x="383" y="420" fill="#E8EEF9" font-family="Arial, Helvetica, sans-serif" font-size="18" text-anchor="middle">Cross-reference falls into</text>
+  <text x="383" y="444" fill="#E8EEF9" font-family="Arial, Helvetica, sans-serif" font-size="18" text-anchor="middle">a different chunk</text>
+  <rect x="714" y="384" width="606" height="76" rx="8" fill="#080E08" stroke="#56D364" stroke-width="1" opacity="0.9"/>
+  <text x="1017" y="420" fill="#E8EEF9" font-family="Arial, Helvetica, sans-serif" font-size="18" text-anchor="middle">Direct navigation through</text>
+  <text x="1017" y="444" fill="#E8EEF9" font-family="Arial, Helvetica, sans-serif" font-size="18" text-anchor="middle">references and appendices</text>
+  <!-- Row 4 -->
+  <rect x="80" y="470" width="606" height="76" rx="8" fill="#120808" stroke="#FF7B72" stroke-width="1" opacity="0.9"/>
+  <text x="383" y="506" fill="#E8EEF9" font-family="Arial, Helvetica, sans-serif" font-size="18" text-anchor="middle">Similar wording can outrank</text>
+  <text x="383" y="530" fill="#E8EEF9" font-family="Arial, Helvetica, sans-serif" font-size="18" text-anchor="middle">the correct page</text>
+  <rect x="714" y="470" width="606" height="76" rx="8" fill="#080E08" stroke="#56D364" stroke-width="1" opacity="0.9"/>
+  <text x="1017" y="506" fill="#E8EEF9" font-family="Arial, Helvetica, sans-serif" font-size="18" text-anchor="middle">Document position and hierarchy</text>
+  <text x="1017" y="530" fill="#E8EEF9" font-family="Arial, Helvetica, sans-serif" font-size="18" text-anchor="middle">as retrieval signals</text>
+  <!-- Row 5 -->
+  <rect x="80" y="556" width="606" height="76" rx="8" fill="#120808" stroke="#FF7B72" stroke-width="1" opacity="0.9"/>
+  <text x="383" y="592" fill="#E8EEF9" font-family="Arial, Helvetica, sans-serif" font-size="18" text-anchor="middle">Final citation may miss</text>
+  <text x="383" y="616" fill="#E8EEF9" font-family="Arial, Helvetica, sans-serif" font-size="18" text-anchor="middle">surrounding context</text>
+  <rect x="714" y="556" width="606" height="76" rx="8" fill="#080E08" stroke="#56D364" stroke-width="1" opacity="0.9"/>
+  <text x="1017" y="592" fill="#E8EEF9" font-family="Arial, Helvetica, sans-serif" font-size="18" text-anchor="middle">Traceable grounding that</text>
+  <text x="1017" y="616" fill="#E8EEF9" font-family="Arial, Helvetica, sans-serif" font-size="18" text-anchor="middle">is easier to verify</text>
+  <!-- Row connector arrows -->
+  <text x="700" y="255" fill="#E3B341" font-family="Arial, Helvetica, sans-serif" font-size="24" text-anchor="middle" font-weight="700">→</text>
+  <text x="700" y="341" fill="#E3B341" font-family="Arial, Helvetica, sans-serif" font-size="24" text-anchor="middle" font-weight="700">→</text>
+  <text x="700" y="427" fill="#E3B341" font-family="Arial, Helvetica, sans-serif" font-size="24" text-anchor="middle" font-weight="700">→</text>
+  <text x="700" y="513" fill="#E3B341" font-family="Arial, Helvetica, sans-serif" font-size="24" text-anchor="middle" font-weight="700">→</text>
+  <text x="700" y="599" fill="#E3B341" font-family="Arial, Helvetica, sans-serif" font-size="24" text-anchor="middle" font-weight="700">→</text>
+</svg>
