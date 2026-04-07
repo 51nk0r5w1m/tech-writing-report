@@ -14,7 +14,6 @@
 
 #import "@preview/fletcher:0.5.8" as fletcher: diagram, node, edge
 #import "@preview/lilaq:0.2.0" as lq
-#import "@preview/gentle-clues:1.3.1": warning
 
 #set page(
   paper: "us-letter",
@@ -69,7 +68,7 @@
   #v(2.2em)
   #block(width: 85%, [
     #set par(justify: false, leading: 0.5em)
-    #text(20pt, weight: "bold", fill: white)[Human-Centric Document Retrieval: Evaluating PageIndex for Long Technical Manuals]
+    #text(20pt, weight: "bold", fill: white)[Retrieval-Augmented Generation vs. Human-Curated Knowledge Systems]
   ])
   #v(1.5em)
   Carley Fant\
@@ -89,43 +88,27 @@
 
 = Abstract
 
-Organizations in engineering, maintenance, manufacturing, and compliance rely on long technical documents that mix paragraphs, tables, diagrams, warnings, and cross-references. Those documents are difficult for artificial intelligence systems to search accurately because many retrieval pipelines flatten pages into plain text before answering questions. Retrieval-augmented generation, or RAG, improved document question answering by retrieving relevant passages before generation, but standard RAG systems still depend on chunking, embeddings, and similarity search. In long manuals, that design can split related steps, detach warnings from procedures, or ignore page layout that helps a human reader make sense of the document. This report examines whether a more human-centered approach, represented here by the PageIndex framework, is a better fit for long-document retrieval. PageIndex indexes documents as structured pages rather than only as text chunks and uses reasoning over that structure instead of vector search alone. This report reviews the development of keyword retrieval, dense retrieval, and layout-aware document intelligence, then compares PageIndex with conventional RAG for one concrete use case: industrial maintenance manuals. The argument is narrower than “PageIndex replaces RAG.” Instead, PageIndex appears most useful when document structure carries part of the meaning.
+Organizations across all sectors depend on reliable access to knowledge to make informed decisions, serve customers, and meet compliance requirements. Two distinct approaches have emerged for managing and retrieving that knowledge at scale: Retrieval-Augmented Generation (RAG), which combines artificial intelligence with automated document search, and human-curated knowledge systems, which rely on expert-organized repositories built for consistency and accountability. This report compares these approaches across three critical dimensions: accuracy, scalability, and operational tradeoffs. Drawing on research in information retrieval, knowledge management, and artificial intelligence, the report synthesizes current findings and evaluates the practical implications of each method. The literature indicates that RAG systems offer meaningful advantages in scalability, adaptability, and semantic search capability, while human-curated systems provide reliability and accountability that are difficult to replicate automatically. Emerging hybrid models suggest that the future of organizational knowledge management lies in combining both approaches. The report also identifies key gaps in current research, including the absence of standardized evaluation frameworks and limited real-world deployment studies.
 
 = Introduction
 
-Large language models have made it easier to ask natural-language questions about large document collections. In practice, however, many professional documents do not behave like simple blocks of text. A maintenance manual, for example, may spread one procedure across multiple pages and place a warning, figure, or exception note in a separate column or appendix. If that material is flattened into plain text and broken into chunks, the system may retrieve only part of the answer.
+The way organizations manage knowledge has always shaped their ability to operate efficiently, serve their users, and respond to change. For decades, the standard answer was human curation: subject-matter experts wrote, reviewed, and maintained structured repositories of organizational knowledge — internal wikis, policy manuals, training databases, and help desk libraries. These systems are still widely used and, in many professional domains, remain the accepted baseline for reliable information.
 
-A 500-page equipment manual changes the stakes. A technician does not only need a sentence that sounds relevant. The technician may need the correct step order, a nearby warning label, a torque table, and a diagram that appears on the next page. In that setting, a retrieval error is more than inconvenient. It can produce an incomplete or misleading answer.
+That baseline is now being challenged. The rapid development of large language models has produced AI-driven systems capable of retrieving and synthesizing information with far less human oversight than traditional approaches require. The most prominent of these is Retrieval-Augmented Generation, or #emph[RAG] — a method that retrieves relevant documents at the moment a question is asked and uses that retrieved evidence to generate a response. Where a human-curated system requires someone to write every answer in advance, RAG generates answers on demand, grounded in whatever documents the system can find.
 
-#warning(title: "Why This Matters")[
-  In a long manual, the answer is often not one sentence. It is a small cluster of nearby information: a step, a warning, a figure, and a threshold value. Losing that cluster is the retrieval problem this report focuses on.
-]
+The comparison between these two approaches carries real consequences for how organizations invest in knowledge infrastructure. Understanding when automated retrieval adds genuine value, when human curation is still necessary, and how the two can complement each other requires more than enthusiasm for new technology — it requires a clear look at what the research evidence actually shows.
 
-Retrieval-augmented generation, usually shortened to #emph[RAG], was developed to reduce hallucinations by retrieving external documents before a language model generates a response (Lewis et al., 2020). Standard RAG systems typically split documents into small segments, convert those segments into numerical representations called #emph[embeddings], and retrieve the segments whose embeddings are most similar to the query. This approach works well for many text-heavy tasks, but it also introduces a new set of problems: chunk boundaries can break context, embeddings may blur local detail, and page layout is often treated as secondary information rather than part of the meaning of the document itself.
-
-The alternative examined here is the #emph[PageIndex] framework. According to the official developer documentation, PageIndex is a vectorless, reasoning-based retrieval framework that builds a tree-structured index of a document and lets a model navigate that structure in a traceable way (PageIndex Developer Docs, 2026). Instead of matching a question to isolated chunks, it moves through the document more like a reader using headings, sections, and page-level context to find the answer.
-
-The central question is whether that approach works better for long technical manuals. To answer it, the report first reviews earlier retrieval approaches, then examines limits in conventional RAG, and finally evaluates where PageIndex offers real advantages and where the evidence is still developing.
+This report examines that evidence. It synthesizes current research on accuracy, scalability, and operational tradeoffs for both RAG and human-curated systems, identifies emerging trends, and highlights the gaps that most need to be addressed before organizations can confidently build on either approach.
 
 = Literature Review
 
-== From Keyword Search to Dense Retrieval
+== Evolution of Knowledge Retrieval
 
-Early document retrieval systems relied on keyword matching and inverted indexes. Manning, Raghavan, and Schutze (2008) explain that these systems are efficient when users know the right terms, but they are less effective when the wording of the query differs from the wording of the source. That weakness is important for technical writing because users often ask questions in everyday language even when the document itself uses specialized vocabulary.
+Knowledge retrieval has gone through several distinct phases, each driven by the limitations of the approach before it. Early systems were built on keyword indexing — a user typed search terms, and the system returned documents that contained those exact words. Manning et al. (2008) describe this approach in detail: it is efficient and predictable, but it breaks down whenever a user's phrasing differs from the document's wording. A practical example makes this concrete: an employee searching for "refund policy for damaged goods" may find nothing if the relevant document uses the phrase "returns for defective merchandise." To a keyword system, these are entirely different queries.
 
-Dense retrieval emerged as a response to that limitation. Instead of matching exact terms, dense retrieval represents queries and documents as embeddings in a shared vector space. Karpukhin et al. (2020) showed that dense passage retrieval could outperform strong BM25 baselines on open-domain question-answering benchmarks, improving top-20 passage retrieval accuracy by substantial margins. In plain terms, dense retrieval made it easier for systems to match by meaning rather than exact wording.
+Dense retrieval emerged as a response to that fragility. Instead of matching words directly, dense retrieval converts both queries and documents into numerical vectors — essentially coordinates in a mathematical space where similar meanings cluster near one another. Karpukhin et al. (2020) demonstrated that this approach significantly outperforms keyword matching on real question-answering benchmarks, improving top-20 retrieval accuracy by substantial margins. In practical terms, dense retrieval means a system can recognize that "refund for damaged goods" and "returns for defective merchandise" are semantically equivalent, even without sharing a single word.
 
-Lewis et al. (2020) turned that retrieval trend into the modern RAG framework. They described a system that combines a generative language model with non-parametric memory, meaning knowledge stored outside the model in retrieved documents. That move mattered because retrieval stopped being just a search step and became part of answer generation itself. RAG improved factual grounding and helped models produce answers tied to evidence rather than relying only on internal parameters.
-
-== Strengths and Limits of Conventional RAG
-
-RAG remains attractive because it is practical. It allows organizations to update a knowledge base without retraining a model, and it gives users answers that can be tied back to retrieved sources. Borgeaud et al. (2022) further demonstrated the power of retrieval-augmented systems at scale by showing that retrieval could improve language-model performance while reducing the need for extremely large parameter counts.
-
-Even so, retrieval quality remains the decisive factor. If the system retrieves the wrong passage, the final answer can still be wrong. Barnett et al. (2024) identify seven failure points in real RAG systems, including problems with chunking, ranking, query formulation, context assembly, and evaluation. Their findings are especially useful for this report because they move beyond ideal benchmark conditions and focus on operational systems. The paper shows that RAG pipelines often fail not because retrieval is useless, but because retrieval engineering is fragile.
-
-One recurring weakness is #emph[chunking], the practice of splitting documents into smaller units so they can be embedded and retrieved efficiently. Chunking is necessary for many pipelines, but it can also disrupt context. In a maintenance manual, a chunk may contain an instruction without the caution note that appears immediately beside it in the original page layout. A model may then retrieve a technically relevant passage while missing the information that makes it safe or complete.
-
-Another weakness is that standard RAG pipelines often treat layout as noise. Many systems begin with optical character recognition, or #emph[OCR], which converts a page image into machine-readable text. OCR is useful, but plain OCR output does not preserve every spatial relationship that matters in diagrams, forms, sidebars, or visually structured technical pages. When document meaning depends partly on where information appears, text-only retrieval can become lossy.
+These advances set the stage for Retrieval-Augmented Generation. Lewis et al. (2020) introduced RAG as a framework that combines document retrieval with generative language models: instead of asking a model to answer from memory alone, RAG first retrieves relevant documents and generates a response grounded in that evidence. This design reduces a well-documented problem in language models called #emph[hallucination] — the tendency to generate confident but incorrect answers — by anchoring responses to real source material rather than relying on what the model was trained to remember.
 
 #figure(
   panel-block(align(center, diagram(
@@ -137,141 +120,86 @@ Another weakness is that standard RAG pipelines often treat layout as noise. Man
     spacing: (8pt, 6pt),
     node((0, 0), text(fill: white, size: 8.5pt)[Keyword IR]),
     edge("-|>"),
-    node((1, 0), text(fill: white, size: 8.5pt)[Dense retrieval]),
+    node((1, 0), text(fill: white, size: 8.5pt)[Dense Retrieval]),
     edge("-|>"),
     node((2, 0), text(fill: white, size: 8.5pt)[RAG]),
     edge("-|>"),
-    node((3, 0), text(fill: white, size: 8.5pt)[Layout-aware]),
+    node((3, 0), text(fill: white, size: 8.5pt)[Human-Curated]),
     edge("-|>"),
-    node((4, 0), text(fill: white, size: 8.5pt)[PageIndex]),
+    node((4, 0), text(fill: white, size: 8.5pt)[Hybrid Models]),
   ))),
-  caption: [Evolution of document retrieval approaches from keyword search to page-structured reasoning. The figure emphasizes the shift in document representation rather than only a shift in model scale.]
+  caption: [Figure 1. Evolution of knowledge retrieval approaches. Each stage addressed a key weakness of the one before it, progressing from exact word matching toward systems that combine automated retrieval with human oversight.]
 )
 
-Figure 1 places PageIndex in context. The field did not jump directly from keyword search to page-based reasoning. Retrieval systems moved from literal term matching to semantic similarity, then to retrieval-plus-generation, and finally toward layout-aware representations. PageIndex makes more sense when seen as part of that longer shift toward richer document representations.
+Figure 1 places these developments in sequence. The field did not move from simple search to AI-generated answers in one leap. Each transition addressed a specific failure, and today's most promising approaches — hybrid models — reflect the accumulated lessons of every stage before them.
 
-#figure(
-  panel-block([
-      #grid(
-        columns: (1fr, 1fr),
-        column-gutter: 14pt,
-        [
-          #set text(fill: ink)
-          #text(weight: "bold", fill: white)[Manual page as a reader sees it]
-          #v(8pt)
-          #chip([Step 3: Verify pressure > 42 psi], fill-color: accent-blue.darken(65%))
-          #h(6pt) #chip([Warning: Do not engage motor above threshold], fill-color: accent-red.darken(70%))
-          #v(8pt)
-          #chip([Torque table nearby], fill-color: accent-green.darken(70%))
-          #h(6pt) #chip([Figure A next to steps], fill-color: accent-amber.darken(70%), text-color: black)
-          #v(12pt)
-          #text(size: 9pt, fill: ink-soft)[
-            A human reader treats these elements as one local unit of meaning.
-          ]
-        ],
-        [
-          #set text(fill: ink)
-          #text(weight: "bold", fill: white)[Same page after flattening]
-          #v(8pt)
-          #block(
-            fill: panel-soft,
-            inset: 10pt,
-            radius: 8pt,
-            [
-              #set text(font: "DejaVu Sans Mono", size: 9.5pt, fill: accent-blue)
-              Section 4.2 Startup after seal replacement ... Verify pressure holds above 42 psi ... Warning do not engage motor above 42 psi ... Figure A ... torque table set B ...
-            ],
-          )
-          #v(12pt)
-          #text(size: 9pt, fill: ink-soft)[
-            The words remain, but grouping and visual emphasis are weaker.
-          ]
-        ],
-      )
-    ],
-  ),
-  caption: [Manual-page anatomy rendered in a native Typst visual style. The figure shows why a page can carry meaning through grouping and placement, not only through raw text.]
-)
+== Accuracy and Reliability
 
-Figure 2 makes the OCR-loss problem concrete. A maintenance page is not just a paragraph. It is a cluster of related signals. When those signals are flattened into text and split into chunks, retrieval quality can drop before generation even begins.
+Accuracy is one of the most studied dimensions of RAG performance, and the research findings are largely consistent: RAG systems produce more factually grounded responses than standalone generative models. Lewis et al. (2020) showed this directly on open-domain question-answering tasks. The reason is intuitive — a model that consults a source document before answering is less likely to fabricate information than one generating an answer purely from memory.
 
-== Layout-Aware Document Understanding
+Borgeaud et al. (2022) extended this finding in a practically important direction: retrieval-enhanced models can match the accuracy of much larger standalone models. In other words, a smaller AI system that can search external documents often outperforms a far larger AI system that cannot. Both OpenAI (2023) and Microsoft (2023) reflect this consensus in their technical guidance, recommending retrieval grounding as a key strategy for improving reliability and enabling users to verify AI responses against their sources.
 
-Research in document intelligence has increasingly recognized that layout carries meaning. Xu et al. (2020), in their work on LayoutLM, argue that text-level modeling alone neglects spatial and visual information that is vital for document image understanding. Their results show that combining text with layout features improves performance on real-world document tasks such as form understanding and receipt understanding. The significance of that finding for this report is direct: if layout matters for forms and receipts, it is reasonable to expect that layout also matters for long technical manuals containing tables, callouts, diagrams, and section hierarchies.
+The important caveat is that RAG accuracy depends entirely on the quality of what is retrieved. Karpukhin et al. (2020) are direct about this dependency: even a capable language model cannot compensate for retrieving the wrong document. If the retrieval step fails — because the query is ambiguous, the relevant document is poorly indexed, or the right source simply is not in the collection — the generated response may be fluent and confident while being factually wrong. Retrieval grounding reduces hallucination; it does not eliminate error.
 
-A broader point follows from that research. Not every retrieval failure comes from bad wording or weak embeddings. Some failures start earlier, with the document representation itself. Once a manual has been reduced to extracted text alone, much of the original page logic is already gone.
+Human-curated systems approach accuracy from a fundamentally different direction. Rather than relying on automated retrieval, they depend on domain experts who verify and organize every piece of information before it enters the knowledge base. Alavi and Leidner (2001) explain that this expert oversight is precisely what gives curated systems their reliability, particularly in high-stakes domains like healthcare, law, and government where a single incorrect answer can have serious consequences. The cost of that reliability is scope: a curated system can only answer questions about what has already been documented and reviewed, and it cannot dynamically synthesize new answers from multiple sources the way RAG can.
 
-== PageIndex and Human-Centric Retrieval
+== Scalability and Maintenance
 
-PageIndex is a recent framework built around that concern. The official documentation describes it as a vectorless, reasoning-based retrieval system that transforms documents into a tree-structured index and allows large language models to perform agentic reasoning over that structure (PageIndex Developer Docs, 2026). The public product site also reports high accuracy on FinanceBench and emphasizes page-level citations, hierarchical indexing, and the absence of vector databases or chunking (PageIndex, 2026).
+The two approaches diverge sharply on scalability, and the research is clear. RAG systems are designed to grow without requiring proportional increases in human labor. Once the retrieval infrastructure is in place, adding new documents to the index is relatively straightforward, and the system can handle larger query volumes without additional headcount. Borgeaud et al. (2022) identify this as one of retrieval-based architecture's most significant practical advantages for organizations operating at scale.
 
-The more important difference is in retrieval logic. In conventional RAG, the system is usually asking which chunk is closest to the query. In PageIndex, the system is deciding where to go next in the document structure. That is closer to how a person actually works through a manual by using the table of contents, section headings, appendices, and nearby figures.
+Human-curated systems scale at the pace of human effort. Every document must be written by someone with relevant expertise, reviewed for accuracy, and organized within a structure that supports findability. Davenport and Prusak (1998) describe the organizational reality plainly: maintaining a large knowledge repository requires continuous investment — not only in people, but in the ongoing processes that keep content current and consistent. As the repository grows, so does the cost of keeping it accurate.
 
-The evidence for PageIndex still needs careful handling. Official benchmarks and product documentation are useful for understanding the system's design, but they are not the same as broad, independent academic validation. In this report, PageIndex is treated as an emerging retrieval architecture supported by early evidence and by related layout-aware document research, not as a settled replacement for every existing method.
+Adaptability presents a related contrast. When information changes — new regulations take effect, products are revised, policies are updated — RAG systems can incorporate those changes by updating the document index, without any model retraining (Lewis et al., 2020). Human-curated systems require a review cycle: new content must be written, checked, and approved before it reaches users. During periods of rapid change, this lag can leave users working from outdated material without knowing it.
+
+== Tradeoffs and Emerging Hybrid Models
+
+RAG's scalability and adaptability advantages come with genuine costs. Building a RAG system requires specialized technical infrastructure: vector databases, embedding pipelines, language model APIs or deployments, and ongoing monitoring. These demands place RAG out of reach for many smaller organizations without dedicated technical staff. There is also a transparency problem — it can be difficult to explain precisely why a particular document was retrieved and used in a specific response, a real concern in any context where decisions need to be audited or justified to stakeholders.
+
+Human-curated systems offer a different kind of value: accountability. Every entry was reviewed by a person, errors can be traced and corrected, and the basis for any given answer is clear. In regulated industries, this is not merely a preference — it is a compliance requirement. The limitation is that human-curated systems are less equipped to handle the volume, variety, and pace of change that many modern organizations face.
+
+Researchers and practitioners are increasingly exploring hybrid designs that aim to capture both strengths. In the most common approach, human experts maintain an authoritative knowledge base that serves as the retrieval corpus, while a RAG system provides flexible, natural-language access to that corpus. Users get the reliability of human-reviewed content with the conversational ease of AI-powered querying. This model is gaining traction precisely because it treats human curation and automated retrieval as complementary rather than competing.
+
+== Gaps and Areas for Future Research
+
+Despite meaningful progress, several important questions remain unresolved. First, most RAG evaluations use controlled benchmark datasets rather than data from real production deployments, making it difficult to assess how these systems actually perform over time with real-world queries and edge cases. Second, questions of bias and explainability persist: the mechanisms that determine which documents are retrieved — and therefore which information shapes a response — are not yet fully understood, and systematic bias in those mechanisms is a genuine risk that has not been fully characterized.
+
+Third, no standardized framework currently exists for comparing RAG and human-curated systems across practically important dimensions such as maintenance cost, long-term usability, and user trust. Without common metrics, organizations cannot benchmark their choices with confidence. Fourth, hybrid models, though promising, remain relatively understudied in the research literature. Practical guidance on how to design, govern, and evaluate these systems in enterprise settings is limited. Addressing these four gaps is the field's most pressing unfinished work.
 
 = Discussion
 
-Novelty by itself is not enough here. The stronger test is to compare PageIndex with conventional RAG in a setting where layout and continuity matter. Industrial maintenance manuals provide that setting because they combine long procedures, page-level references, warnings, tables, and visual elements.
-
-#figure(
-  panel-block(align(center, diagram(
-    node-stroke: 0.7pt + line,
-    node-fill: panel-soft,
-    node-inset: 8pt,
-    node-corner-radius: 6pt,
-    edge-stroke: 1pt + accent-amber,
-    spacing: (18pt, 10pt),
-    node((0, 0), text(fill: accent-red, weight: "bold", size: 9pt)[OCR + RAG]),
-    node((1, 0), text(fill: accent-blue, weight: "bold", size: 9pt)[PageIndex]),
-    node((0, 1), text(fill: white, size: 8.5pt)[1. Extract text]),
-    node((1, 1), text(fill: white, size: 8.5pt)[1. Keep structure]),
-    node((0, 2), text(fill: white, size: 8.5pt)[2. Chunk passages]),
-    node((1, 2), text(fill: white, size: 8.5pt)[2. Follow hierarchy]),
-    node((0, 3), text(fill: white, size: 8.5pt)[3. Rank by similarity]),
-    node((1, 3), text(fill: white, size: 8.5pt)[3. Reason through manual]),
-    edge((0, 1), (0, 2), "-|>"),
-    edge((0, 2), (0, 3), "-|>"),
-    edge((1, 1), (1, 2), "-|>"),
-    edge((1, 2), (1, 3), "-|>"),
-  ))),
-  caption: [Comparison of retrieval workflows for long technical manuals. Conventional OCR-plus-RAG pipelines flatten pages into extracted text, then rely on chunking and vector similarity. PageIndex-style retrieval preserves page hierarchy and reasons over the document structure directly.]
-)
-
-Figure 3 shows that the deepest difference between the two approaches is not speed or model size. It is the assumed shape of the document. In a conventional pipeline, retrieval begins after the page has already been transformed into text chunks. In a PageIndex-style pipeline, retrieval begins from page and section structure. That distinction matters when warnings, diagrams, or side notes are essential to the meaning of the procedure.
-
-Imagine a field technician searching a compressor maintenance manual for the startup procedure after a seal replacement. In a chunk-based system, one chunk may contain the sequence of steps, another may contain the pressure threshold, and a third may contain a warning box about overheating. If the system retrieves only the first chunk because it is the closest semantic match, the answer may sound complete while leaving out material that changes the correct action. A page-structured approach has a better chance of preserving those local relationships.
+The research literature supports a nuanced conclusion: neither RAG nor human-curated systems is superior in every context. The more useful question is which approach fits a given organization's specific needs — a judgment that depends on the nature of the information, the stakes of errors, the pace of change in that domain, and the technical resources available.
 
 #figure(
   fig-table(
-    columns: (1fr, 1fr),
+    columns: (auto, 1fr, 1fr),
     table.header(
-      [Where OCR + RAG breaks],
-      [What page-structured retrieval preserves],
+      [Dimension],
+      [RAG Systems],
+      [Human-Curated Systems],
     ),
-    [Warning box separates from the procedure step],
-    [Page-level grouping of steps, notes, and warnings],
-    [Table values drift away from nearby explanation],
-    [Local relationship between values and instructions],
-    [Cross-reference falls into a different chunk],
-    [Direct navigation through references and appendices],
-    [Similar wording can outrank the correct page],
-    [Document position and hierarchy as retrieval signals],
-    [Final citation may miss surrounding context],
-    [Traceable grounding that is easier to verify],
+    [Retrieval method], [Automated via vector similarity search], [Manual browse, keyword, or structured navigation],
+    [Accuracy dependency], [Depends on retrieval quality and index coverage], [Depends on expert review and content completeness],
+    [Scalability], [High; scales with infrastructure, not headcount], [Limited; scales only as fast as human capacity],
+    [Update speed], [Fast; index updates require no model retraining], [Slower; new content requires a full review cycle],
+    [Transparency], [Limited; retrieval logic is often opaque], [High; every entry is human-reviewed and traceable],
+    [Infrastructure cost], [Significant specialized technical stack required], [Lower technical barrier; higher ongoing labor cost],
+    [Best suited for], [Large, dynamic knowledge bases with varied queries], [High-stakes, regulated domains requiring verified answers],
   ),
-  caption: [Failure-point comparison for OCR-plus-RAG and PageIndex-style retrieval. The figure shows where flattening a manual into disconnected text units creates preventable loss.]
+  caption: [Table 1. Comparative overview of RAG and human-curated knowledge systems across key dimensions. Based on synthesis of Lewis et al. (2020), Borgeaud et al. (2022), Karpukhin et al. (2020), Alavi and Leidner (2001), and Davenport and Prusak (1998).]
 )
 
-Figure 4 turns the comparison into specific breakdown points. This is where the PageIndex argument is strongest. The issue is not simply that RAG uses vectors. The bigger problem is that a visually structured manual is often converted into disconnected text units before retrieval even begins.
+Table 1 shows that the differences between these approaches are not simply a matter of new versus old, or AI versus human. They reflect fundamentally different assumptions about where reliability comes from. RAG systems assume that a well-indexed document corpus and a capable retrieval pipeline will surface the right information when needed. Human-curated systems assume that expert review at the point of content creation is the most reliable form of quality control. Both assumptions are defensible — in their respective contexts.
+
+A concrete example illustrates the tradeoffs. Consider a large healthcare organization managing employee questions about benefits, compliance, and clinical procedures. A human-curated system guarantees that every answer has been verified by a compliance expert — but it may take weeks to incorporate a new regulatory change, and employees who phrase questions differently from the system's keyword structure may not find what they need. A RAG system can handle natural-language queries and update quickly when regulations change — but in a clinical context, a retrieval error that causes an employee to act on incomplete information about a medication policy has real consequences. A hybrid model — where compliance experts maintain the authoritative source documents and a RAG system provides natural-language access to them — addresses both concerns at once.
 
 #figure(
   panel-block(align(center, {
     set text(fill: ink, size: 8.5pt)
-    let criteria = ("Complete", "Layout", "Trace", "Update", "Usability")
+    let criteria = ("Accuracy", "Scalability", "Adaptability", "Transparency", "Usability")
     let xs = (0, 1, 2, 3, 4)
-    let kw = (2, 1, 3, 5, 2)
-    let rag = (3, 1, 3, 5, 3)
-    let pi = (5, 5, 5, 4, 5)
+    let rag = (4, 5, 5, 2, 4)
+    let hc = (5, 2, 2, 5, 3)
+    let hybrid = (4, 4, 4, 4, 5)
     let w = 0.25
     lq.diagram(
       width: 11cm,
@@ -280,67 +208,80 @@ Figure 4 turns the comparison into specific breakdown points. This is where the 
       xaxis: (ticks: xs.zip(criteria), subticks: none),
       lq.bar(
         xs.map(x => x - w),
-        kw,
-        width: w,
-        color: accent-red,
-        label: [Keyword],
-      ),
-      lq.bar(
-        xs,
         rag,
         width: w,
         color: accent-amber,
         label: [RAG],
       ),
       lq.bar(
-        xs.map(x => x + w),
-        pi,
+        xs,
+        hc,
         width: w,
         color: accent-blue,
-        label: [PageIndex],
+        label: [Human-Curated],
+      ),
+      lq.bar(
+        xs.map(x => x + w),
+        hybrid,
+        width: w,
+        color: accent-green,
+        label: [Hybrid],
       ),
     )
   })),
-  caption: [Comparative fit of keyword search, conventional RAG, and PageIndex-style retrieval for long industrial manuals. Scores are on a 0-5 scale.]
+  caption: [Figure 2. Comparative performance scores for RAG, human-curated, and hybrid knowledge systems across five organizational dimensions. Scores reflect qualitative synthesis of research literature on a 0–5 scale; they are not derived from a single empirical study.]
 )
 
-Figure 5 applies that comparison directly to industrial manuals. The main value of PageIndex is not that it rejects retrieval. It changes the unit of retrieval from arbitrary text slices to navigable document structure. That design choice directly addresses several failure modes identified by Barnett et al. (2024), especially those involving chunk boundaries, ranking errors, and noisy context assembly.
+Figure 2 makes the complementary nature of these approaches visually clear. RAG systems lead on scalability and adaptability. Human-curated systems lead on accuracy and transparency. Hybrid models score competitively across all five dimensions and achieve the highest usability rating — because they combine the natural-language accessibility of RAG with the reliability of curated content. The consistent picture in the literature is that organizations choosing between these approaches should focus less on which is better in the abstract and more on which characteristics matter most for their specific situation.
 
-This does not make conventional RAG ineffective. Standard RAG remains a strong choice for many tasks, especially when documents are mostly linear prose and the target is a short factual passage. In those cases, dense retrieval offers a practical balance of speed, flexibility, and performance. Long technical manuals are different. They are visual documents, and some of their meaning sits in the layout itself.
+The trust dimension deserves particular attention. In regulated or public-facing environments, users and auditors need to trace how an answer was generated and verify that it reflects authoritative, reviewed information. Human-curated systems make this straightforward. RAG systems make it harder, even when source citations are attached to outputs, because the retrieval process itself — the decision about which documents to surface and how to weight them — often remains opaque. Hybrid models, by grounding RAG retrieval in human-curated corpora, can significantly narrow this transparency gap while preserving the scalability advantages that make RAG valuable.
 
-There is a practical trust advantage as well. Human readers are more likely to trust a system when they can see how it reached an answer. A page-based retrieval path is easier to explain than a hidden nearest-neighbor search over high-dimensional embeddings. In regulated or safety-sensitive environments, that matters.
+#figure(
+  fig-table(
+    columns: (auto, 1fr, 1fr, 1fr),
+    table.header(
+      [Criterion],
+      [RAG],
+      [Human-Curated],
+      [Hybrid],
+    ),
+    [Handles natural-language queries], [Strong], [Weak], [Strong],
+    [Adapts to new information quickly], [Strong], [Limited], [Strong],
+    [Provides auditable, traceable answers], [Moderate], [Strong], [Strong],
+    [Operates at high query volume], [Strong], [Limited], [Strong],
+    [Meets regulatory accountability requirements], [Marginal], [Strong], [Strong],
+    [Suitable for small organizations], [Moderate], [Strong], [Moderate],
+  ),
+  caption: [Table 2. Application-level evaluation of knowledge system approaches across six organizational criteria. Based on synthesis across Lewis et al. (2020), Alavi and Leidner (2001), Borgeaud et al. (2022), and Davenport and Prusak (1998).]
+)
 
-The limitations are real. PageIndex-specific claims are still supported heavily by official documentation and public product material. Vector search also remains highly effective in many document settings and is backed by a much deeper research base. A PageIndex-style system still requires careful orchestration, model selection, and evaluation to work reliably in production. A more human-like retrieval strategy does not remove the need for engineering discipline.
-
-So the best near-term claim is not “PageIndex replaces RAG.” The stronger claim is narrower. PageIndex addresses a class of retrieval failures that become more serious as documents grow longer, more structured, and more visual. That makes it a meaningful development for professional environments where missing context is costly.
+Table 2 translates the abstract comparison into specific organizational scenarios. The pattern that emerges is consistent: RAG handles volume and variety well; human-curated systems handle accountability and auditability well; hybrid systems handle both. The practical implication is that organizations in regulated industries or with significant compliance obligations should plan for hybrid architectures rather than treating RAG as a full replacement for human curation.
 
 = Conclusion
 
-The research literature shows a clear progression from keyword search to dense retrieval and then to retrieval-augmented generation. Each stage improved how systems locate and use information. However, the literature also shows that long-document retrieval remains difficult when documents are broken into isolated text chunks and stripped of their original structure.
+The research literature tells a consistent story. The evolution from keyword search to dense retrieval to Retrieval-Augmented Generation represents genuine progress in how information systems handle the complexity of human language. RAG offers scalability, adaptability, and semantic understanding that human-curated systems cannot match at scale. Human-curated systems offer reliability, accountability, and auditability that RAG currently struggles to replicate. Neither approach is adequate alone for the full range of organizational needs.
 
-For long technical manuals, that limitation is significant. These documents depend on page layout, section hierarchy, diagrams, warnings, and cross-references. In such settings, conventional RAG can retrieve relevant language while still missing essential context. PageIndex is promising because it approaches retrieval more like a human reader would: by navigating the document as a structured artifact instead of only as an embedding space.
+The most actionable finding from the literature is that hybrid models — where human expertise defines and maintains the knowledge foundation, and AI-powered retrieval provides flexible access — represent the most promising direction for enterprise knowledge management. This is not a compromise between competing approaches. It is a recognition that their strengths are genuinely complementary, and that combining them produces systems that outperform either alternative on the dimensions that matter most in practice: accuracy, usability, transparency, and scalability together.
 
-The conclusion remains cautious, but the direction is still clear. PageIndex should not be treated as a universal replacement for RAG, and its public evidence base is still developing. It does point toward a real improvement in document intelligence because it addresses a weakness in text-only retrieval workflows. For industrial maintenance manuals and similar long technical documents, a human-centric retrieval model can offer better completeness, better traceability, and a safer basis for question answering than chunk-based systems alone.
-
-Future work should test these systems with independent evaluations on real-world document collections, not only on public benchmarks or vendor claims. If those evaluations confirm early results, PageIndex-style retrieval may become a valuable standard for document-heavy professional environments.
+What the literature does not yet provide is the practical guidance organizations need to design, implement, and evaluate these systems with confidence. The gaps identified in this report — limited real-world deployment evidence, unresolved bias and explainability challenges, the absence of standardized comparison frameworks, and the underdevelopment of hybrid system governance — are not minor theoretical footnotes. They represent the gap between recognizing that hybrid models are promising and knowing how to build them well. Closing those gaps is the field's most important near-term task, and it requires research conducted in real production environments, not only on academic benchmarks.
 
 = Reference Page
 
-[Barnett, S., Kurniawan, S., Thudumu, S., Brannelly, Z., & Abdelrazek, M. (2024). #emph[Seven failure points when engineering a retrieval augmented generation system]. Proceedings of the First International Conference on AI Engineering: Software Engineering for AI. https://arxiv.org/abs/2401.05856]
+[Alavi, M., & Leidner, D. E. (2001). #emph[Knowledge management and knowledge management systems: Conceptual foundations and research issues]. MIS Quarterly, 25(1), 107–136. https://www.jstor.org/stable/3250961]
 
-[Borgeaud, S., Mensch, A., Hoffmann, J., Cai, T., Rutherford, E., Millican, K., van den Driessche, G., Lespiau, J.-B., Damoc, B., Clark, A., de Las Casas, D., Guy, A., Menick, J., Ring, R., Hennigan, T., Huang, S., Maggiore, L., Jones, C., Cassirer, A., ... Sifre, L. (2022). #emph[Improving language models by retrieving from trillions of tokens]. Proceedings of the 39th International Conference on Machine Learning, 2206-2240. https://proceedings.mlr.press/v162/borgeaud22a.html]
+[Borgeaud, S., Mensch, A., Hoffmann, J., Cai, T., Rutherford, E., Millican, K., van den Driessche, G., Lespiau, J.-B., Damoc, B., Clark, A., de Las Casas, D., Guy, A., Menick, J., Ring, R., Hennigan, T., Huang, S., Maggiore, L., Jones, C., Cassirer, A., ... Sifre, L. (2022). #emph[Improving language models by retrieving from trillions of tokens]. DeepMind. https://www.deepmind.com/publications/improving-language-models-by-retrieving-from-trillions-of-tokens]
 
-[Karpukhin, V., Oguz, B., Min, S., Lewis, P., Wu, L., Edunov, S., Chen, D., & Yih, W.-t. (2020). #emph[Dense passage retrieval for open-domain question answering]. Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing, 6769-6781. https://aclanthology.org/2020.emnlp-main.550/]
+[Davenport, T. H., & Prusak, L. (1998). #emph[Working knowledge: How organizations manage what they know]. Harvard Business School Press. https://hbr.org/product/working-knowledge-how-organizations-manage-what-they-know/10566]
 
-[Lewis, P., Perez, E., Piktus, A., Petroni, F., Karpukhin, V., Goyal, N., Kuttler, H., Lewis, M., Yih, W.-t., Rocktaschel, T., Riedel, S., & Kiela, D. (2020). #emph[Retrieval-augmented generation for knowledge-intensive NLP tasks]. Advances in Neural Information Processing Systems, 33. https://papers.nips.cc/paper/2020/hash/6b493230205f780e1bc26945df7481e5-Abstract.html]
+[Karpukhin, V., Oguz, B., Min, S., Lewis, P., Wu, L., Edunov, S., Chen, D., & Yih, W.-t. (2020). #emph[Dense passage retrieval for open-domain question answering]. Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing, 6769–6781. https://arxiv.org/abs/2004.04906]
 
-[Manning, C. D., Raghavan, P., & Schutze, H. (2008). #emph[Introduction to information retrieval]. Cambridge University Press. https://nlp.stanford.edu/IR-book/]
+[Lewis, P., Perez, E., Piktus, A., Petroni, F., Karpukhin, V., Goyal, N., Kuttler, H., Lewis, M., Yih, W.-t., Rocktaschel, T., Riedel, S., & Kiela, D. (2020). #emph[Retrieval-augmented generation for knowledge-intensive NLP tasks]. Advances in Neural Information Processing Systems, 33. https://arxiv.org/abs/2005.11401]
 
-[PageIndex. (2026). #emph[Vectorless, reasoning-based document intelligence]. https://www.pageindex.dev/]
+[Manning, C. D., Raghavan, P., & Schütze, H. (2008). #emph[Introduction to information retrieval]. Cambridge University Press. https://nlp.stanford.edu/IR-book/]
 
-[PageIndex Developer Docs. (2026). #emph[What is PageIndex?]. https://docs.pageindex.ai/]
+[Microsoft. (2023). #emph[Retrieval-augmented generation (RAG) and LLMs]. Microsoft Azure Architecture Center. https://learn.microsoft.com/en-us/azure/architecture/ai-ml/guide/rag]
 
-[Xu, Y., Li, M., Cui, L., Huang, S., Wei, F., & Zhou, M. (2020). #emph[LayoutLM: Pre-training of text and layout for document image understanding]. Proceedings of the 26th ACM SIGKDD Conference on Knowledge Discovery and Data Mining, 1192-1200. https://www.microsoft.com/en-us/research/publication/layoutlm-pre-training-of-text-and-layout-for-document-image-understanding/]
+[OpenAI. (2023). #emph[Improving factual accuracy with retrieval]. OpenAI Platform Documentation. https://platform.openai.com/docs/guides/retrieval]
 
 = Appendix
 
