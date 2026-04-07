@@ -2,6 +2,7 @@
 export default {
   title: "Human-Centric Document Retrieval",
   root: "src",
+  base: "/tech-writing-report/",
   theme: ["near-midnight"],
   toc: true,
   sidebar: true,
