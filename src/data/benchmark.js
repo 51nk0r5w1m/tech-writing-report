@@ -39,5 +39,6 @@ for (const entry of raw) {
       confidence: score >= 4 ? "high" : score >= 3 ? "medium" : "low",
     });
   }
-process.stdout.write(JSON.stringify(rows));
+}
 
+process.stdout.write(JSON.stringify(rows));
