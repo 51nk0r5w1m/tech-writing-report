@@ -5,7 +5,11 @@ export default {
   base: "/tech-writing-report/",
   theme: ["near-midnight"],
   toc: true,
-  sidebar: false,
+  sidebar: true,
+  pages: [
+    { name: "Report", path: "/" },
+    { name: "Data Loading Lab", path: "/data-loading" },
+  ],
   footer: "Carley Fant · Technical and Scientific Writing, Section V01 · Columbus State University · Spring 2026",
   head: `<style>
     @media print {
