@@ -1,0 +1,38 @@
+[
+  {
+    "approach": "Keyword / BM25",
+    "completeness": 2,
+    "layout": 1,
+    "traceability": 3,
+    "flexibility": 4,
+    "usability": 2,
+    "description": "Classic inverted-index search. Fast and transparent, but needs exact wording."
+  },
+  {
+    "approach": "Dense RAG",
+    "completeness": 3,
+    "layout": 2,
+    "traceability": 3,
+    "flexibility": 4,
+    "usability": 3,
+    "description": "Embeds chunks into vector space for semantic similarity. Great for prose-heavy docs."
+  },
+  {
+    "approach": "Layout-aware",
+    "completeness": 3,
+    "layout": 4,
+    "traceability": 3,
+    "flexibility": 3,
+    "usability": 3,
+    "description": "Combines text with spatial features (e.g. LayoutLM). Better for forms and structured pages."
+  },
+  {
+    "approach": "PageIndex-style",
+    "completeness": 4,
+    "layout": 5,
+    "traceability": 5,
+    "flexibility": 4,
+    "usability": 4,
+    "description": "Vectorless, reasoning-based. Navigates document structure like a human reader."
+  }
+]
